@@ -156,7 +156,7 @@ class NeighborsAttn(nn.Module):
             for poi in range(loc_emb.size()[1]):
                 pid = int(loc[bt][poi])
                 if pid == 0:  # pad
-                    neighbor_emb = [[0] * 100] * 10
+                    neighbor_emb = [[0] * self.loc_emb_size] * self.neighbors_num
                 else:
                     neighbor_emb = neighbors_tensor[pid]
                 loc_neigh_emb[bt][poi] = neighbor_emb
