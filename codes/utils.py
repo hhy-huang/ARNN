@@ -25,14 +25,16 @@ class PaddingData:
             run_queue = run_queue
             u_list = [u for u, _ in run_queue]
 
-            loc_batch = pad_sequence([data[u][i]['loc'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
-                                     batch_first=True, padding_value=0)
-            tim_batch = pad_sequence([data[u][i]['tim'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
-                                     batch_first=True, padding_value=0)
-            word_batch = pad_sequence([data[u][i]['word'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
-                                     batch_first=True, padding_value=0)
-            target_batch = pad_sequence([data[u][i]['target'] for u, i in run_queue],
-                                        batch_first=True, padding_value=0)
+            # loc_batch = pad_sequence([data[u][i]['loc'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
+            #                          batch_first=True, padding_value=0)
+            loc_batch = pad_sequence([data[u][i]['loc'] for u, i in run_queue], batch_first=True, padding_value=0)
+            # tim_batch = pad_sequence([data[u][i]['tim'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
+            #                          batch_first=True, padding_value=0)
+            tim_batch = pad_sequence([data[u][i]['tim'] for u, i in run_queue], batch_first=True, padding_value=0)
+            # word_batch = pad_sequence([data[u][i]['word'][:-data[u][i]['target'].data.size()[0]] for u, i in run_queue],
+            #                          batch_first=True, padding_value=0)
+            word_batch = pad_sequence([data[u][i]['word'] for u, i in run_queue], batch_first=True, padding_value=0)
+            target_batch = pad_sequence([data[u][i]['target'] for u, i in run_queue], batch_first=True, padding_value=0)
             sequence_length = [data[u][i]['target'].data.size()[0] for u, i in run_queue]
             sequence_length_train = [data[u][i]['loc'].data.size()[0] - data[u][i]['target'].data.size()[0] for u, i in run_queue]
             f = torch.LongTensor
