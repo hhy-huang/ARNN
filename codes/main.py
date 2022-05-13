@@ -19,6 +19,7 @@ import warnings
 from model import NeighborsAttn
 from train import (RnnParameterData, generate_neighbors_dict,
                    generate_input_long_history,
+                   generate_input_history,
                    markov, run_simple)
 
 warnings.filterwarnings('ignore')
@@ -76,8 +77,8 @@ def run(args):
     avg_acc_markov, users_acc_markov = markov(parameters, candidate)
     metrics['markov_acc'] = users_acc_markov
 
-    data_train, train_idx = generate_input_long_history(parameters.data_neural, 'train', candidate=candidate)
-    data_test, test_idx = generate_input_long_history(parameters.data_neural, 'test', candidate=candidate)
+    data_train, train_idx = generate_input_history(parameters.data_neural, 'train', argv['history_mode'], candidate=candidate)
+    data_test, test_idx = generate_input_history(parameters.data_neural, 'test', argv['history_mode'], candidate=candidate)
 
     print('data_name:{}'.format(args.data_name))
     print('users:{} markov:{} train:{} test:{}'.format(len(candidate), avg_acc_markov,
@@ -91,16 +92,17 @@ def run(args):
     metrics_view = {'train_loss': [], 'valid_loss': [], 'accuracy_1': [], 'ndcg_1': [],
                     'accuracy_5': [], 'ndcg_5': [], 'accuracy_10': [], 'ndcg_10': []}
     neighbors_dict = generate_neighbors_dict(parameters.vid_list, parameters.path_data)
-    # neighbors_dict = {}
-    # model.load_state_dict(torch.load('../results/checkpoint/ep_1.m'))
+    # neighbors_dict = {}5
+    # model.load_state_dict(torch.load('../results/checkpoint/ep_2.m'))
     # 开始训练
     for epoch in range(parameters.epoch):
         st = time.time()
         # 若此时没有预训练模型则开始训练
         # print(model)
         if args.pretrain == 0:
-            model, avg_loss = run_simple(epoch, neighbors_dict, data_train, train_idx, 'train', lr, parameters.clip, model, optimizer,
-                                         criterion, parameters.model_mode, batch_size=args.batch_size,)
+            model, avg_loss = run_simple(epoch, neighbors_dict, data_train, train_idx, 'train', lr, parameters.clip,
+                                         model, optimizer,
+                                         criterion, parameters.model_mode, batch_size=args.batch_size, )
             print('==>Train Epoch:{:0>2d} Loss:{:.4f} lr:{}'.format(epoch, avg_loss, lr))
             metrics['train_loss'].append(avg_loss)
 
@@ -208,7 +210,8 @@ if __name__ == '__main__':
     np.random.seed(1)
     torch.manual_seed(1)
     print(torch.cuda.is_available())
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+    torch.cuda.set_device(2)
     # ptvsd.enable_attach(address = ('115.156.96.2', 3000))
     # ptvsd.wait_for_attach()
     parser = argparse.ArgumentParser()
